@@ -1,5 +1,8 @@
 //As shown on:
 //http://nakkaya.com/2009/11/08/command-line-progress-bar/
+
+#include <math.h>
+
 void printProgBar( int num_marked_points, int num_points ){
   std::string bar;
 

@@ -27,14 +27,16 @@
 
 #include <boost/unordered_map.hpp>
 
+#include "Log.hpp"
+
 using namespace std;
 using namespace boost;
 
-typedef boost::unordered_map<string, pair<bool, time_t> > TimerType;
+typedef boost::unordered_map<string, pair<bool, time_t> > TimerMapType;
 
 class TimeProfile {
     private:
-        TimerType timers;
+        TimerMapType timers;
     public:
         void start_timer(string timer_name);
         void restart_timer(string timer_name);

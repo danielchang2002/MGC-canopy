@@ -20,9 +20,8 @@
  */
 
 
-#include <boost/foreach.hpp>
-
-#include <Canopy.hpp>
+#include "Point.hpp"
+#include "Canopy.hpp"
 
 Canopy::Canopy(Point* center_to_copy){
     center = new Point(*center_to_copy);
@@ -57,7 +56,7 @@ std::ostream& operator<<(std::ostream& ost, const Canopy& c)
     //ost << std::endl;
     ost << ">>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
 
-
+    return ost;
 }
 
 bool compare_canopy_ptrs_by_canopy_size(const Canopy* a, const Canopy* b){

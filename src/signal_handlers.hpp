@@ -22,7 +22,8 @@
 #define SIGNAL_HANDLERS
 
 #include <signal.h>
-#include <Log.hpp>
+
+#include "Log.hpp"
 
 extern int terminate_called;
 

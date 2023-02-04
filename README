@@ -13,7 +13,7 @@
 ########################
 # 1. Introduction
 ########################
-Our variation of canopy clustering focuses on efficient clustering of points in multi-dimensional pearson correlation space. The basic notion of the heuristic is choosing a point(seed point) at random, and upon establishing it's distance to all the other points, single out those that are within a specified canopy distance. A median profile of those points is then calculated creating a canopy centroid. The canopy creation process is then repeated perpetually(canopy walk) from the previously created centroid until the distance between previous centroid is small enough. All points from the last canopy are then marked, and will not become seed points again. The above will be repeated for all possible seed points.
+Our variation of canopy clustering focuses on efficient clustering of points in multi-dimensional pearson correlation space. The basic notion of the heuristic is choosing a point(seed point) at random, and upon establishing its distance to all the other points, single out those that are within a specified canopy distance. A median profile of those points is then calculated creating a canopy centroid. The canopy creation process is then repeated perpetually(canopy walk) from the previously created centroid until the distance between previous centroid is small enough. All points from the last canopy are then marked, and will not become seed points again. The above will be repeated for all possible seed points.
 
 ########################
 # 2. Obtaining the code 
@@ -27,17 +27,25 @@ $ git clone https://bitbucket.org/HeyHo/mgs-canopy-algorithm.git
 ########################
 Software requirements:
 
-The Canopy Clustering program is implemented entirely in C++. It's only dependencies is BOOST headers and BOOST program options library.
-On debian based systems the package names should be libboost-dev and libboost-program-options-dev.
+The Canopy Clustering program is implemented entirely in C++. The software requires a modern C++11 compiler with OpenMP support - such as GCC 4.8+ or clang 3.8+. On Mac you might install "clang-omp" through brew.
+The software's only dependencies are BOOST headers and BOOST program_options library. On debian based systems the package names should be libboost-dev and libboost-program-options-dev.
+Additionally the build process is based on cmake tool which can be obtained on both Linux and Mac through "cmake" package.
 
 Compiling:
-Two Makefiles are provided with the code, for typical x86_64 system please use Makefile-cges2 in the src directory of the downloaded code.
 
-The easiest way to compile the code is to change your current directory to src subdirectory run:
+If the default system compiler doesn't support OpenMP (as in the case on the mac) - which is true if Cmake will complain about finding OpenMP support - you must set CC and CXX environmental variables to a compiler that does.
+I suggest creating a directory called 'build' (if there isn't one there already) in the root project directory and from therein running "cmake ../" command. This command will generate Makefile which is called by make command to actually compile the program.
+A successful compilation will produce a "canopy" executable located under "build" directory and its copy in the project root directory.
+An example of commands to be executed follows:
 
-$ make -f Makefile-cges2
+$ mkdir build
+$ cd ./build
+$ export CC=clang-omp
+$ export CXX=clang-omp++
+$ cmake ../
+$ make
 
-If the compilation is successfull a cc.bin executable should appear in the src subdirectory.
+By default the algorithm uses floating opint type to represent numbers to save memory. If the amount of RAM is not a concern, cmake can be executed with -DSINGLEPRECISION=0 flag to use double precision type instead. This will double the amount of memory used.
 
 ########################
 # 4. Run Requirements
@@ -48,10 +56,10 @@ RAM Memory
 When run with a matrix of ~7M points with 600 data samples each using 12 threads, the program may take up to 40GB of active memory. The memory requirement scales linearly with both number of points, number of samples and number of threads.
 
 CPU
-The program was written with parallelization as it's primary focus and it's running time should scale linearly even with high amounts of cores. There is no real minimum to the number of threads that the program should be run on but we recommend using at least 8 logical-threads(as returned by your /etc/cpuinfo).
+The program was written with parallelization as its primary focus and its running time should scale linearly even with high amounts of cores. There is no real minimum to the number of threads that the program should be run on but we recommend using at least 8 logical-threads(as returned by your /etc/cpuinfo).
 
 Disk
-The typical run will generate no more than one-tenth of the input size as it's output.
+The typical run will generate no more than one-tenth of the input size as its output.
 
 ########################
 # 5. Input 
@@ -102,7 +110,7 @@ MGU00004        Point6
 MGU00005        Point8
 
 Cluster profiles file:
-Cluster profiles file contains line-by-line the cluster name and it's profile. The first column is always the name and following columns are the profile data-points in the order corresponding to point input file. All columns are tab separated.
+Cluster profiles file contains line-by-line the cluster name and its profile. The first column is always the name and following columns are the profile data-points in the order corresponding to point input file. All columns are tab separated.
 
 Cluster profiles file example:
 MGU00000        1 0 0 3 3 3
@@ -119,13 +127,13 @@ An up-to-date list of program parameters can be obtained by running it with '--h
 
 An example of successful run command is presented below. Arguments in "<>" brackets are absolute paths to files.
 
-$ cc.bin -n 16 -i <matrix_input_file> -o <clusters_out> -c <profiles_out> -p <CAG_prefix> --max_canopy_dist 0.1 --max_close_dist 0.4 --max_merge_dist 0.1 --min_step_dist 0.005 --stop_fraction 1 --canopy_size_stats_file <progress_stat_file>
+$ canopy -n 16 -i <matrix_input_file> -o <clusters_out> -c <profiles_out> -p <CAG_prefix> --max_canopy_dist 0.1 --max_close_dist 0.4 --max_merge_dist 0.1 --min_step_dist 0.005 --stop_fraction 1 --canopy_size_stats_file <progress_stat_file>
 
 The process can be interrupted using an interrupt system signal. By default the interrupt signal will cause the program to stop the clustering and commence canopy merging - thus the partial results will be provided. This behavior can be changed through "die_on_kill" option.
 
 An example of sending the interrupt signal (SUSE linux):
 
-$ kill -INT [cc.bin PID]
+$ kill -INT [canopy PID]
 
 
 

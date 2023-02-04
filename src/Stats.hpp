@@ -21,9 +21,11 @@
 #ifndef STATS
 #define STATS
 
+#include "precision_type.hpp"
 
-double pearsoncorr_from_precomputed(int n, const double* v1, const double* v2);
+PRECISIONT corr_from_precomputed(int n, const PRECISIONT* v1, const PRECISIONT* v2);
 
-void precompute_pearson_data(int sample_data_length, const double* sample_data, double* precomputed_pearson_data);
+void precompute_pearson_data(int sample_data_length, const PRECISIONT* sample_data, PRECISIONT* precomputed_pearson_data);
+void precompute_spearman_data(int sample_data_length, const PRECISIONT* sample_data, PRECISIONT* precomputed_pearson_data);
 
 #endif

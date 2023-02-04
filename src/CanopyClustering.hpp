@@ -23,9 +23,11 @@
 #include <vector>
 #include <boost/unordered_set.hpp>
 
-#include <Point.hpp>
-#include <Canopy.hpp>
-#include <TimeProfile.hpp>
+#include "precision_type.hpp"
+
+#include "Point.hpp"
+#include "Canopy.hpp"
+#include "TimeProfile.hpp"
 
 using namespace std;
 
@@ -41,12 +43,13 @@ class CanopyClusteringAlg{
          * Parameters:
          * points - list of references to points to be clustered
          * num_threads - number of threads to be used in the calculation
-         * max_canopy_dist, max_close_dist, max_merge_dist, max_num_canopy_walks, stop_proportion_of_points, show_progress_bar - see program parameters description 
+         * max_canopy_dist, max_close_dist, max_merge_dist, max_num_canopy_walks, stop_after_num_seeds_processed, show_progress_bar - see program parameters description 
+         * create_canopy_size_stats - boolean defining whether the progress file should be created
          * canopy_size_stats_fp - absolute file path to the canopy size statistics file
          * not_procesed_point_fp - absolute file path to the file containing not processed points if early stopped
          * time_profile - TimeProfile object instance for gathering statistics on time it took for each of the analysis steps
          */
-        static std::vector<Canopy*> multi_core_run_clustering_on(vector<Point*>& points, int num_threads, double max_canopy_dist, double max_close_dist, double max_merge_dist, double min_step_dist, int max_num_canopy_walks, double stop_proportion_of_points, string canopy_size_stats_fp, string not_processed_points_fp,  bool show_progress_bar, TimeProfile& time_profile);
+        static std::vector<Canopy*> multi_core_run_clustering_on(vector<Point*>& points, vector<string>& priority_read_names, int num_threads, PRECISIONT max_canopy_dist, PRECISIONT max_close_dist, PRECISIONT max_merge_dist, PRECISIONT min_step_dist, int max_num_canopy_walks, PRECISIONT stop_after_num_seeds_processed, bool create_canopy_size_stats, string canopy_size_stats_fp, string not_processed_points_fp, bool show_progress_bar, TimeProfile& time_profile);
 
         /**
          * Create canopy given an origin point
@@ -59,7 +62,7 @@ class CanopyClusteringAlg{
          * min_close_correlation - minimum distance in correlation space between origin and a tested point for the point to be considered close to the canopy
          * sets_close_points - flag describing if the current execution of this function should set the close_points
          */
-        static Canopy* create_canopy(Point* origin, vector<Point*>& points, vector<Point*>& close_points, double min_neighbour_correlation, double min_close_correlation, bool sets_close_points);
+        static Canopy* create_canopy(Point* origin, vector<Point*>& points, vector<Point*>& close_points, PRECISIONT min_neighbour_correlation, PRECISIONT min_close_correlation, bool sets_close_points);
         
         /**
          * Execute the create_canopy function iteratively until a stable canopy is reached. 
@@ -71,10 +74,11 @@ class CanopyClusteringAlg{
          * max_canopy_dist, max_close_dist, min_step_dist, max_num_canopy_walks  - see program parameters
          * num_canopy_jumps - number of times the create_canopy function was executed
          */
-        static Canopy* canopy_walk(Point* origin, vector<Point*>& points, vector<Point*>& close_points, double max_canopy_dist, double max_close_dist, double min_step_dist, double max_num_canopy_walks, int& num_canopy_jumps);
+        static Canopy* canopy_walk(Point* origin, vector<Point*>& points, vector<Point*>& close_points, PRECISIONT max_canopy_dist, PRECISIONT max_close_dist, PRECISIONT min_step_dist, PRECISIONT max_num_canopy_walks, int& num_canopy_jumps);
 
+        static void shuffle_points(vector<Point*>& points, vector<string>& priority_read_names);
         static void filter_clusters_by_zero_medians(int min_num_non_zero_medians, vector<Canopy*>& canopies_to_filter);
-        static void filter_clusters_by_single_point_skew(double max_single_data_point_proportion, vector<Canopy*>& canopies_to_filter);
+        static void cag_filter_max_top3_sample_contribution(PRECISIONT max_single_data_point_proportion, vector<Canopy*>& canopies_to_filter);
         static void filter_clusters_by_size(std::vector<Canopy*>& canopies_to_filter);
 };
 

@@ -18,8 +18,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <TimeProfile.hpp>
-#include <boost/foreach.hpp>
+
+#include "TimeProfile.hpp"
 
 void TimeProfile::start_timer(string timer_name){
     if(timers.count(timer_name) && timers[timer_name].first)
@@ -42,16 +42,22 @@ void TimeProfile::stop_timer(string timer_name){
     timers[timer_name].first = false;
     timers[timer_name].second = time(NULL) - timers[timer_name].second; 
 
+    _log(logINFO) << timer_name << ": " << timers[timer_name].second/60 << " minutes (" << timers[timer_name].second << " secconds)" ;
+
 }
 
 std::ostream& operator<<(std::ostream& ost, const TimeProfile& tp)
 {
     ost << ">>>>>>>>>>Time Statistics>>>>>>>>" << std::endl;
-    BOOST_FOREACH(TimerType::value_type timer, tp.timers){
-        if( !timer.second.first )
-            ost << timer.first << ": " << timer.second.second/60 << "min (" << timer.second.second << "sec)" << endl;
+    for (TimerMapType::value_type timer_name_value_pair : tp.timers){
+        auto timer_name = timer_name_value_pair.first;
+        auto timer_finished = timer_name_value_pair.second.first;
+        auto timer_time = timer_name_value_pair.second.second;
+        if( !timer_finished )
+            ost << timer_name << ": " << timer_time/60 << " minutes (" << timer_time << " seconds)" << endl;
     }
     ost << ">>>>>>>>>>END>>>>>>>>" << std::endl;
 
+    return ost;
 }
 

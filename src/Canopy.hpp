@@ -23,7 +23,7 @@
 
 #include <string>
 
-#include <Point.hpp>
+#include "Point.hpp"
 
 using namespace std;
 

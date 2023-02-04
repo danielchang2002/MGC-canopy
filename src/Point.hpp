@@ -18,6 +18,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+#include "precision_type.hpp"
+
 #ifndef POINT
 #define POINT
 
@@ -26,11 +29,14 @@
 #include <iostream>
 #include <math.h>
 
+enum ProfileMeasureType {MEDIAN, MEAN, PERCENTILE_75, PERCENTILE_80, PERCENTILE_85, PERCENTILE_90, PERCENTILE_95};
+enum DistanceMeasureType {PEARSON, SPEARMAN};
+
 using namespace std;
 class Point {
     public:
-        double* sample_data;
-        double* sample_data_pearson_precomputed;
+        PRECISIONT* sample_data;
+        PRECISIONT* sample_data_pearson_precomputed;
         int num_data_samples;
 
         Point(const Point& p);
@@ -39,15 +45,15 @@ class Point {
         
         std::string id;
 
+        void allocate_and_precompute_corr_data(DistanceMeasureType distance_measure);
         bool check_if_num_non_zero_samples_is_greater_than_x(int x);
-        bool check_if_single_point_proportion_is_smaller_than(double x);
-        bool check_if_top_three_point_proportion_is_smaller_than(double x);
+        bool check_if_top_three_point_proportion_is_smaller_than(PRECISIONT x);
 
-        friend double* precompute_pearson_data(double* sample_data);
+//        friend PRECISIONT* precompute_pearson_data(PRECISIONT* sample_data);
         friend std::size_t hash_value(const Point &p);
         friend std::ostream& operator<<(std::ostream& ost, const Point& ls);
 
-        friend double get_distance_between_points(const Point* p1, const Point* p2);
+        friend PRECISIONT get_distance_between_points(const Point* p1, const Point* p2);
         friend Point* get_centroid_of_points(const std::vector<Point*>& points);
         friend void verify_proper_point_input_or_die(const std::vector<Point*>& points);
 };
